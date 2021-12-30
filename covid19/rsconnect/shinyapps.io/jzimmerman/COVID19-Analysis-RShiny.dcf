@@ -1,0 +1,12 @@
+name: COVID19-Analysis-RShiny
+title: COVID19-Analysis-RShiny
+username:
+account: jzimmerman
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3084624
+bundleId: 3860924
+url: https://jzimmerman.shinyapps.io/COVID19-Analysis-RShiny/
+when: 1605382959.66772
+asMultiple: FALSE
+asStatic: FALSE
