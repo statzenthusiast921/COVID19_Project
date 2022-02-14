@@ -9,6 +9,6 @@ The goal of this project was to understand the global spread and impact of the C
 
 
 ## Data
-* [Comprehensive COVID19 Data - World Health Organization (WHO)](covid19.who.int/table)
-* [2020 Population Data](github.com/datasets/population)
+* [Comprehensive COVID19 Data - World Health Organization (WHO)](https://covid19.who.int/table)
+* [2020 Population Data](https://github.com/datasets/population)
 
