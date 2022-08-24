@@ -7,6 +7,10 @@ The goal of this project was to understand the global spread and impact of the C
 * Understand which countries have been hit the hardest by the pandemic 
 * Understand which countries are currently facing a surge in cases/deaths over the last 2 weeks
 
+### Link
+
+[COVID19 Dashboard App](https://jzimmerman.shinyapps.io/COVID19-Analysis-RShiny/?_ga=2.63640234.405763992.1661361035-2118574259.1661361035)
+
 
 ## Data
 * [Comprehensive COVID19 Data - World Health Organization (WHO)](https://covid19.who.int/table)
