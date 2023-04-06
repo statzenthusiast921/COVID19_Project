@@ -434,7 +434,9 @@ output$vbox5 <- renderValueBox({
 #----Map #1: Choropleth Map - World Cases----#
 output$world_map=renderLeaflet({
     
-    bins=c(0,500,1000,5000,10000,100000,500000,1000000,5000000,Inf)
+    bins=c(0,5000,10000,50000,100000,1000000,5000000,10000000,50000000,Inf)
+    bins3=c(0,5000,10000,25000,50000,100000,250000,500000,1000000,Inf)
+    
     pal=colorBin(palette = "YlOrBr",domain = merge_filter()$Cumulative_cases,na.color = "transparent",bins=bins)
     customLabel = paste(strong("Country: "),merge_filter()$Country,"<br/>",
                         strong("Cumulative Cases: "),formatC(merge_filter()$Cumulative_cases,format="d",
@@ -443,19 +445,21 @@ output$world_map=renderLeaflet({
     
     
     
-    pal2=colorBin(palette = "YlOrBr",domain = merge_filter()$Cumulative_deaths,na.color = "transparent",bins=bins)
+    pal2=colorBin(palette = "YlOrBr",domain = merge_filter()$Cumulative_deaths,na.color = "transparent",bins=bins3)
     customLabel2 = paste(strong("Country: "),merge_filter()$Country,"<br/>",
                          strong("Cumulative Deaths: "),formatC(merge_filter()$Cumulative_deaths,format="d",big.mark=","), serp="") %>%
     lapply(htmltools::HTML)
     
     
-    bins2=c(0,25,50,100,250,500,1000,2500,5000,Inf)
+    bins2=c(0,250,500,1000,2500,5000,10000,25000,50000,Inf)
+    bins4=c(0,25,50,75,100,200,300,400,500,Inf)
+    
     pal3=colorBin(palette = "YlOrBr",domain = merge_filter()$Adjusted_CumulCases,na.color = "transparent",bins=bins2)
     customLabel3 = paste(strong("Country: "),merge_filter()$Country,"<br/>",
                          strong("Cumulative Cases per 100,000 people: "),formatC(merge_filter()$Adjusted_CumulCases,format="d",big.mark=","), serp="") %>%
     lapply(htmltools::HTML)
     
-    pal4=colorBin(palette = "YlOrBr",domain = merge_filter()$Adjusted_CumulDeaths,na.color = "transparent",bins=bins2)
+    pal4=colorBin(palette = "YlOrBr",domain = merge_filter()$Adjusted_CumulDeaths,na.color = "transparent",bins=bins4)
     customLabel4 = paste(strong("Country: "),merge_filter()$Country,"<br/>",
                          strong("Cumulative Deaths per 100,000 people: "),formatC(merge_filter()$Adjusted_CumulDeaths,format="d",big.mark=","), serp="") %>%
     lapply(htmltools::HTML)
