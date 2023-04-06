@@ -16,3 +16,5 @@ The goal of this project was to understand the global spread and impact of the C
 * [Comprehensive COVID19 Data - World Health Organization (WHO)](https://covid19.who.int/table)
 * [2020 Population Data](https://github.com/datasets/population)
 
+## Update
+* As of April 6th, 2023, I downloaded the CSV locally, uploaded to Github here, and filtered the data for January 2020 through December 2022 to lessen the burden on the app.  The data had been updating daily from the link above and taking longer and longer to load.
