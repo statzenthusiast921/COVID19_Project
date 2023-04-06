@@ -1,4 +1,6 @@
 # COVID19 R Shiny App - 11.13.2020
+# Fixed 04/26/2023
+# app stopped working so need to update
 #----------------------------------#
 #library(httr)
 #library(pkgconfig)
@@ -6,7 +8,8 @@
 
 
 #Read in datasets
-who_data <- read.csv("https://covid19.who.int/WHO-COVID-19-global-data.csv")
+who_data <- read.csv("https://raw.githubusercontent.com/statzenthusiast921/COVID19_Project/main/covid19/WHO-COVID-19-global-data_040623.csv")
+who_data <- subset(who_data,who_data$Date_reported<="2022-12-31")
 pops <- read.csv("https://gist.githubusercontent.com/curran/0ac4077c7fc6390f5dd33bf5c06cb5ff/raw/605c54080c7a93a417a3cea93fd52e7550e76500/UN_Population_2019.csv")
 
 
@@ -358,10 +361,11 @@ server <- function(input, output) {
         p=ggplot(filtered_data(), aes_string(x=filtered_data()$Date, y=input$metric_select))+
             geom_point(size=0.75,aes(text=paste("Date: ", filtered_data()$Date)))+
             geom_line(color="red",size=0.5)+
-            xlab("Date")+
+            xlab("Date")
             ggtitle(paste0("COVID19 ", input$metric_select," for ",filtered_data()$Country))+
-            theme(plot.title = element_text(color="black", size=14, face="bold",hjust=0.5))+
-            scale_y_continuous(labels = comma)
+            theme(plot.title = element_text(color="black", size=14, face="bold",hjust=0.5))#+
+            #scale_y_continuous(labels = comma)
+        
         ggplotly(p, tooltip = c("text",'y'))
         
     
@@ -371,7 +375,7 @@ server <- function(input, output) {
 
     output$vbox1 <- renderValueBox({
         valueBox(value = formatC(mean(filtered_data()$Population),format="d",big.mark = ","),
-                 subtitle = paste0("Current Population of ",unique(filtered_data()$Country)),
+                 subtitle = paste0("2020 Population of ",unique(filtered_data()$Country)),
                  color = "light-blue"
         )
     })
