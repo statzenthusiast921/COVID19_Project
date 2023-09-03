@@ -29,7 +29,7 @@ who_data.rename(columns={'New_cases': 'New Cases', 'Cumulative_cases': 'Cumulati
 # with open(world_path) as f:
 #     geo_world = json.load(f)
 
-geo_world = pd.read_json('https://raw.githubusercontent.com/statzenthusiast921/Personal-Projects/main/COVID19%20Project/custom.geo.json')
+geo_world = pd.read_json('https://raw.githubusercontent.com/statzenthusiast921/COVID19_Project/main/custom.geo.json')
 
     
 country_conversion_dict = {
