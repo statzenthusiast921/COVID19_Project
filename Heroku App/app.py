@@ -16,7 +16,7 @@ import dash_table
 
 
 from numpy.lib.function_base import median
-import simplejson as json
+#import simplejson as json
 
 who_data = pd.read_csv("https://covid19.who.int/WHO-COVID-19-global-data.csv")
 pops = pd.read_csv("https://gist.githubusercontent.com/curran/0ac4077c7fc6390f5dd33bf5c06cb5ff/raw/605c54080c7a93a417a3cea93fd52e7550e76500/UN_Population_2019.csv")
@@ -24,6 +24,7 @@ pops = pops[['Country','2020']]
 pops['2020'] = pops['2020']*1000
 who_data.rename(columns={'New_cases': 'New Cases', 'Cumulative_cases': 'Cumulative Cases', 'New_deaths': 'New Deaths','Cumulative_deaths': 'Cumulative Deaths'}, inplace=True)
 
+#world_path = pd.read_csv("https://raw.githubusercontent.com/statzenthusiast921/Personal-Projects/main/COVID19%20Project/custom.geo.json")
 # DATA_PATH = "/Users/jonzimmerman/Desktop/Data Projects/COVID19 Project/covid19-heroku/static/"
 # world_path = DATA_PATH + 'custom.geo.json'
 # with open(world_path) as f:
@@ -207,7 +208,6 @@ table_show = table_show[['Country', 'Date Reported', 'Population', "New Cases","
 app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
 app.layout = html.Div([
-#Welcome Tab - Tab 1
     dcc.Tabs([
         dcc.Tab(label='Welcome',value='tab-1',style=tab_style, selected_style=tab_selected_style,
                children=[
@@ -240,7 +240,6 @@ app.layout = html.Div([
 
 
                ]),
-#Data Tab - Tab 2
         dcc.Tab(label='All Data',value='tab-2',style=tab_style, selected_style=tab_selected_style,
                children=[
                    dash_table.DataTable(id='table',
@@ -261,7 +260,13 @@ app.layout = html.Div([
                    
                ]),
         
-#Tab 3 --> Plot and Cards by Country
+        
+        
+        
+        
+        
+        
+#Tab 1 --> Plot and Cards by Country
         dcc.Tab(label='Country', value='tab-3', style=tab_style, selected_style=tab_selected_style,
                 children=[
             html.Div([
@@ -291,7 +296,7 @@ app.layout = html.Div([
             ])
         ]),
         
-#Tab 4 --> Choropleth World Map by Cases/Deaths   
+#Tab 2 --> Choropleth World Map by Cases/Deaths   
 
     
         dcc.Tab(label='Spread', value='tab-4', style=tab_style, selected_style=tab_selected_style,
@@ -317,7 +322,7 @@ app.layout = html.Div([
                                    min = min(slider_options.keys()),
                                    max = max(slider_options.keys()),                                   
                                    value = min(slider_options.keys()),
-                                   marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 65 == 0}
+                                   marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 150 == 0}
 
                                   )
                         
@@ -349,7 +354,7 @@ app.layout = html.Div([
                     ])
         ]),
         
-#Tab 5 --> Top 10 Countries by Cumulative Cases/Deaths       
+#Tab 3 --> Top 10 Countries by Cumulative Cases/Deaths       
         
         dcc.Tab(label="Top 10", value='tab-5', style=tab_style, selected_style=tab_selected_style,
                 children=[
@@ -368,7 +373,7 @@ app.layout = html.Div([
                                    min = min(slider_options.keys()),
                                    max = max(slider_options.keys()),                                   
                                    value = max(slider_options.keys()),
-                                   marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 50 == 0}
+                                   marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 150 == 0}
 
                                   )
                         
@@ -390,7 +395,8 @@ app.layout = html.Div([
                     ])
     
         ]),
-#Tab 6 --> Top 10 Countries by New Cases/Deaths over 14 Day Period   
+#Tab 4 --> Top 10 Countries by New Cases/Deaths over 14 Day Period   
+        
         
         dcc.Tab(label="14-Day Trend", value='tab-6', style=tab_style, selected_style=tab_selected_style,
                 children=[
@@ -409,7 +415,7 @@ app.layout = html.Div([
                                    min = min(slider_options.keys()),
                                    max = max(slider_options.keys()),                                   
                                    value = max(slider_options.keys()),
-                                   marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 50 == 0}
+                                   marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 150 == 0}
 
                                   )
                         
@@ -465,7 +471,7 @@ def render_content(tab):
 
 
 
-#Configure Reactivity for Tab 3 Cards
+#Configure Reactivity for Tab 1 Cards
 @app.callback(
     Output('card_row','children'),
     Input('dropdown1','value')
@@ -513,7 +519,7 @@ def update_cards(country_select):
     card3 = dbc.Card([
         dbc.CardBody([
             html.H4(c_totdeath, className="card-title"),
-            html.P(f"Total Deaths for {country_select}")
+            html.P(f"Cumulative Deaths for {country_select}")
         ])
     ],
     style={'display': 'inline-block',
@@ -527,7 +533,7 @@ def update_cards(country_select):
     return (card1, card2, card3)  
 
 
-#Configure Reactivity for Country Plot on Tab 3
+#Configure Reactivity for Country Plot on Tab 1
 @app.callback(
     Output('country_plot','figure'),
     Input('dropdown1','value'),
@@ -550,7 +556,7 @@ def update_figure(country_select,metric_select):
         return fig
 
 
-#Configure Reactivity for Choropleth Cards on Tab 4
+#Configure Reactivity for Choropleth Cards on Tab 2
 @app.callback(
     Output('card_row2','children'),
     Input('slider','value')
@@ -598,7 +604,7 @@ def update_cards2(date_select_index):
     return (card4, card5)
 
     
-#Configure Reactivity for Choropleth Map on Tab 4
+#Configure Reactivity for Choropleth Map on Tab 2
 @app.callback(
     Output('choropleth_plot','figure'),
     Input('slider','value'),
@@ -710,7 +716,7 @@ def update_figure2(date_select_index,radio_select,radio_select2):
 
 
 
-#Configure Reactivity for Bar Plots on Tab 5
+#Configure Reactivity for Bar Plots on Tab 3
 
 @app.callback(
     Output('top10cases','figure'),
@@ -766,7 +772,7 @@ def update_figure3(date_select_index,radio_select):
         return (fig, fig2)
 
 
-#Configure Reactivity for Area Plots on Tab 6
+#Configure Reactivity for Area Plots on Tab 4
 
 @app.callback(
     Output('figa1','figure'),
@@ -847,8 +853,6 @@ def update_figure4(date_select_index,radio_select):
 
         return (fig_area, fig_area2)
 
-
-
-#app.run_server(host='0.0.0.0',port='8055')
-if __name__=='__main__':
-	app.run_server()
+app.run_server(host='0.0.0.0',port='8055')
+# if __name__=='__main__':
+# 	app.run_server()
