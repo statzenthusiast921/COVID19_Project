@@ -853,6 +853,6 @@ def update_figure4(date_select_index,radio_select):
 
         return (fig_area, fig_area2)
 
-app.run_server(host='0.0.0.0',port='8055')
-# if __name__=='__main__':
-# 	app.run_server()
+#app.run_server(host='0.0.0.0',port='8055')
+if __name__=='__main__':
+ 	app.run_server()
