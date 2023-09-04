@@ -207,7 +207,7 @@ table_show = table_show[['Country', 'Date Reported', 'Population', "New Cases","
 
 app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
-app.layout = html.Div([
+app.layout = html.Div(children=[
     dcc.Tabs([
         dcc.Tab(label='Welcome',value='tab-1',style=tab_style, selected_style=tab_selected_style,
                children=[
