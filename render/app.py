@@ -18,7 +18,7 @@ import dash_table
 from numpy.lib.function_base import median
 #import simplejson as json
 
-who_data = pd.read_csv("https://covid19.who.int/WHO-COVID-19-global-data.csv")
+who_data = pd.read_csv("https://raw.githubusercontent.com/statzenthusiast921/COVID19_Project/main/data/who_data.csv")
 pops = pd.read_csv("https://gist.githubusercontent.com/curran/0ac4077c7fc6390f5dd33bf5c06cb5ff/raw/605c54080c7a93a417a3cea93fd52e7550e76500/UN_Population_2019.csv")
 pops = pops[['Country','2020']]
 pops['2020'] = pops['2020']*1000
@@ -30,7 +30,7 @@ who_data.rename(columns={'New_cases': 'New Cases', 'Cumulative_cases': 'Cumulati
 # with open(world_path) as f:
 #     geo_world = json.load(f)
 
-geo_world = pd.read_json('https://raw.githubusercontent.com/statzenthusiast921/COVID19_Project/main/custom.geo.json')
+geo_world = pd.read_json('https://raw.githubusercontent.com/statzenthusiast921/COVID19_Project/main/data/custom.geo.json')
 
     
 country_conversion_dict = {
