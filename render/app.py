@@ -2,20 +2,11 @@
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plotly.graph_objs as go
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
-import time
-from datetime import date, datetime
-import dash_table
-
-
-
-from numpy.lib.function_base import median
-#import simplejson as json
+from datetime import datetime
 
 who_data = pd.read_csv("https://raw.githubusercontent.com/statzenthusiast921/COVID19_Project/main/data/who_data.csv")
 pops = pd.read_csv("https://gist.githubusercontent.com/curran/0ac4077c7fc6390f5dd33bf5c06cb5ff/raw/605c54080c7a93a417a3cea93fd52e7550e76500/UN_Population_2019.csv")
@@ -23,11 +14,7 @@ pops = pops[['Country','2020']]
 pops['2020'] = pops['2020']*1000
 who_data.rename(columns={'New_cases': 'New Cases', 'Cumulative_cases': 'Cumulative Cases', 'New_deaths': 'New Deaths','Cumulative_deaths': 'Cumulative Deaths'}, inplace=True)
 
-#world_path = pd.read_csv("https://raw.githubusercontent.com/statzenthusiast921/Personal-Projects/main/COVID19%20Project/custom.geo.json")
-# DATA_PATH = "/Users/jonzimmerman/Desktop/Data Projects/COVID19 Project/covid19-heroku/static/"
-# world_path = DATA_PATH + 'custom.geo.json'
-# with open(world_path) as f:
-#     geo_world = json.load(f)
+who_data['Date_reported'].max()
 
 geo_world = pd.read_json('https://raw.githubusercontent.com/statzenthusiast921/COVID19_Project/main/data/custom.geo.json')
 
@@ -206,7 +193,7 @@ table_show = table_show[['Country', 'Date Reported', 'Population', "New Cases","
 
 app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = app.server
-app.layout = html.Div(children=[
+app.layout = html.Div([
     dcc.Tabs([
         dcc.Tab(label='Welcome',value='tab-1',style=tab_style, selected_style=tab_selected_style,
                children=[
@@ -255,184 +242,173 @@ app.layout = html.Div(children=[
                    sort_action='native',sort_mode="multi",
                    page_action="native", page_current= 0,page_size= 20,                     
                    data=table_show.to_dict('records'))
-                   
-                   
+                 
                ]),
-        
-        
-        
-        
-        
-        
-        
 #Tab 1 --> Plot and Cards by Country
         dcc.Tab(label='Country', value='tab-3', style=tab_style, selected_style=tab_selected_style,
                 children=[
-            html.Div([
-                dcc.Dropdown(
-                    id='dropdown1',
-                    options=[{'label': i, 'value': i} for i in country_choices],
-                    value=country_choices[0]
-                )
-            ],style={'width': '50%',
-                     'display': 'inline-block',
-                     'text-align': 'center'}
-            ),
-            html.Div([
-                dcc.Dropdown(
-                    id='dropdown2',
-                    options=[{'label': i, 'value': i} for i in metric_choices],
-                    value=metric_choices[0]
-                )],style={'width': '50%',
-                          'display': 'inline-block',
-                          'text-align': 'center'}
-            ),
-            html.Div([
-                dbc.Row(id="card_row")
-            ]),
-            html.Div([
-                dcc.Graph(id='country_plot')
-            ])
-        ]),
-        
+                    dbc.Row([
+                        dbc.Col([
+                            dcc.Dropdown(
+                                id='dropdown1',
+                                options=[{'label': i, 'value': i} for i in country_choices],
+                                value=country_choices[0]
+                            ),
+                            dcc.Dropdown(
+                                id='dropdown2',
+                                options=[{'label': i, 'value': i} for i in metric_choices],
+                                value=metric_choices[0]
+                            )
+                        
+                        ], width = 12)
+                    ]),
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Row(id="card_row")
+                        ], width = 12)
+                    ]),
+                    dbc.Row([
+                        dbc.Col([
+                            dcc.Graph(id='country_plot')
+                        ], width = 12)
+                    ])
+                ]
+        ),
 #Tab 2 --> Choropleth World Map by Cases/Deaths   
-
-    
         dcc.Tab(label='Spread', value='tab-4', style=tab_style, selected_style=tab_selected_style,
                 children=[
                     #Label Row
-                    html.Div([
-                        html.Label(dcc.Markdown('''**Choose a date: **''')),
-                    ],style={'width': '64%', 'display': 'inline-block','text-align': 'center','padding-left':'2%'}
-                    ),
-                    html.Div([
-                        html.Label(dcc.Markdown('''**Choose a metric: **''')),
-                    ],style={'text-align': 'center','width': '17%','display': 'inline-block'}
-                    ), 
-                    html.Div([
-                        html.Label(dcc.Markdown('''**Adjust for Population: **''')),
-                    ],style={'text-align': 'center','width': '17%','display': 'inline-block'}
-                    
-                    
-                    ),
-                    #Slider and Radio Button Controls Row
-                    html.Div([
-                        dcc.Slider(id='slider',
-                                   min = min(slider_options.keys()),
-                                   max = max(slider_options.keys()),                                   
-                                   value = min(slider_options.keys()),
-                                   marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 150 == 0}
-
-                                  )
-                        
-                    ],style={'width': '64%', 'display': 'inline-block','text-align': 'center','padding-left':'2%'}),
-                    html.Div([
-                        dcc.RadioItems(
-                            id='radio1',
-                            options=[
-                                {'label': ' Cumulative Cases', 'value': 'Cumulative Cases'},
-                                {'label': ' Cumulative Deaths', 'value': 'Cumulative Deaths' }
-                            ],value='Cumulative Cases',
-                            labelStyle={'display': 'block'}
-                        )  
-                    ],style={'text-align': 'center','width': '17%','display': 'inline-block'}),
-                    html.Div([
-                        dcc.RadioItems(
-                            id='radio2',
-                            options=[
-                                {'label': ' Yes', 'value': 'Yes'},
-                                {'label': ' No', 'value': 'No' }
-                            ],value='No',
-                            labelStyle={'display': 'block'}
-                        ) 
-                        
-                    ],style={'text-align': 'center','width': '17%','display': 'inline-block'}),
-                    html.Div([
-                        dbc.Row(id="card_row2"),
-                        dcc.Graph(id='choropleth_plot')
+                    dbc.Row([
+                        dbc.Col([
+                            html.Label(dcc.Markdown('''**Choose a date: **''')),
+                        ], width = 8),
+                        dbc.Col([
+                            html.Label(dcc.Markdown('''**Choose a metric: **''')),
+                        ], width = 2),
+                        dbc.Col([
+                            html.Label(dcc.Markdown('''**Adjust for Population: **''')),
+                        ], width = 2)
+                    ]),
+                    dbc.Row([
+                        dbc.Col([
+                        #Slider and Radio Button Controls Row
+                            dcc.Slider(id='slider',
+                                    min = min(slider_options.keys()),
+                                    max = max(slider_options.keys()),                                   
+                                    value = min(slider_options.keys()),
+                                    marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 150 == 0}
+                            )
+                        ], width = 8),
+                        dbc.Col([
+                            dcc.RadioItems(
+                                id='radio1',
+                                options=[
+                                    {'label': ' Cumulative Cases', 'value': 'Cumulative Cases'},
+                                    {'label': ' Cumulative Deaths', 'value': 'Cumulative Deaths' }
+                                ],value='Cumulative Cases',
+                                labelStyle={'display': 'block'}
+                            )  
+                        ], width = 2),
+                        dbc.Col([
+                            dcc.RadioItems(
+                                id='radio2',
+                                options=[
+                                    {'label': ' Yes', 'value': 'Yes'},
+                                    {'label': ' No', 'value': 'No' }
+                                ],value='No',
+                                labelStyle={'display': 'block'}
+                            ) 
+                        ],width = 2)
+                    ]),
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Row(id="card_row2"),
+                            dcc.Graph(id='choropleth_plot')
+                        ])
                     ])
+                  
         ]),
-        
 #Tab 3 --> Top 10 Countries by Cumulative Cases/Deaths       
         
         dcc.Tab(label="Top 10", value='tab-5', style=tab_style, selected_style=tab_selected_style,
                 children=[
                     #Label Row
-                    html.Div([
-                        html.Label(dcc.Markdown('''**Choose a date: **''')),
-                    ],style={'width': '80%','display': 'inline-block','text-align': 'center','padding-left':'1%'}),
-                    html.Div([
-                        html.Label(dcc.Markdown('''**Adjust for population: **''')),
-                    ],style={'width': '20%','display': 'inline-block','text-align': 'center'}
-                    ),
-                    
-                    #Slider and Radio Button Control Row
-                    html.Div([
-                        dcc.Slider(id='slider2',
-                                   min = min(slider_options.keys()),
-                                   max = max(slider_options.keys()),                                   
-                                   value = max(slider_options.keys()),
-                                   marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 150 == 0}
-
-                                  )
-                        
-                    ],style={'width': '80%','display': 'inline-block','text-align': 'center','padding-left':'1%'}),
-                    html.Div([
-                        dcc.RadioItems(
-                            id='radio3',
-                            options=[
-                                {'label': ' Yes', 'value': 'Yes'},
-                                {'label': ' No', 'value': 'No' }
-                            ], value='No',
-                            labelStyle={'display': 'block'}
-                        )  
-                        
-                    ],style={'width': '20%','display': 'inline-block','text-align': 'center'}),
-                    html.Div([
-                        dcc.Graph(id="top10cases"),
-                        dcc.Graph(id="top10deaths")
+                    dbc.Row([
+                        dbc.Col([
+                            html.Label(dcc.Markdown('''**Choose a date: **''')),
+                        ], width = 8),
+                        dbc.Col([
+                            html.Label(dcc.Markdown('''**Adjust for population: **''')),
+                        ], width = 4),
+                    ]),
+                    dbc.Row([
+                        dbc.Col([
+                        #Slider and Radio Button Control Row
+                            dcc.Slider(id='slider2',
+                                    min = min(slider_options.keys()),
+                                    max = max(slider_options.keys()),                                   
+                                    value = max(slider_options.keys()),
+                                    marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 150 == 0}
+                                    )
+                        ],width = 8),
+                        dbc.Col([
+                            dcc.RadioItems(
+                                id='radio3',
+                                options=[
+                                    {'label': ' Yes', 'value': 'Yes'},
+                                    {'label': ' No', 'value': 'No' }
+                                ], value='No',
+                                labelStyle={'display': 'block'}
+                            )  
+                        ], width = 4)
+                    ]),
+                    dbc.Row([
+                        dbc.Col([
+                            dcc.Graph(id="top10cases"),
+                            dcc.Graph(id="top10deaths")
+                        ])
                     ])
-    
         ]),
 #Tab 4 --> Top 10 Countries by New Cases/Deaths over 14 Day Period   
-        
-        
+
         dcc.Tab(label="14-Day Trend", value='tab-6', style=tab_style, selected_style=tab_selected_style,
                 children=[
                     #Label Row
-                    html.Div([
-                        html.Label(dcc.Markdown('''**Choose a date: **''')),
-                    ],style={'width': '80%','display': 'inline-block','text-align': 'center','padding-left':'1%'}),
-                    html.Div([
-                        html.Label(dcc.Markdown('''**Adjust for population: **''')),
-                    ],style={'width': '20%','display': 'inline-block','text-align': 'center'}
-                    ),
-                    
+                    dbc.Row([
+                        dbc.Col([
+                            html.Label(dcc.Markdown('''**Choose a date: **''')),
+                        ], width = 8),
+                        dbc.Col([
+                            html.Label(dcc.Markdown('''**Adjust for population: **''')),
+                        ], width = 4)
+                    ]),
+                    dbc.Row([
+                        dbc.Col([
                     #Slider and Radio Button Control Row
-                    html.Div([
-                        dcc.Slider(id='slider3',
-                                   min = min(slider_options.keys()),
-                                   max = max(slider_options.keys()),                                   
-                                   value = max(slider_options.keys()),
-                                   marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 150 == 0}
-
-                                  )
-                        
-                    ],style={'width': '80%','display': 'inline-block','text-align': 'center','padding-left':'1%'}),
-                    html.Div([
-                        dcc.RadioItems(
-                            id='radio4',
-                            options=[
-                                {'label': ' Yes', 'value': 'Yes'},
-                                {'label': ' No', 'value': 'No' }
-                            ],value='No',
-                            labelStyle={'display': 'block'}
-                        )
-                        
-                    ],style={'width': '20%','display': 'inline-block','text-align': 'center'}),
-                    html.Div([
-                        dcc.Graph(id="figa1"),
-                        dcc.Graph(id="figa2")
+                            dcc.Slider(id='slider3',
+                                    min = min(slider_options.keys()),
+                                    max = max(slider_options.keys()),                                   
+                                    value = max(slider_options.keys()),
+                                    marks = {i: slider_options[i] for i in range(x[0], x[-1]) if i % 150 == 0}
+                                    )
+                        ], width = 8),
+                        dbc.Col([
+                            dcc.RadioItems(
+                                id='radio4',
+                                options=[
+                                    {'label': ' Yes', 'value': 'Yes'},
+                                    {'label': ' No', 'value': 'No' }
+                                ],value='No',
+                                labelStyle={'display': 'block'}
+                            )
+                            
+                        ], width = 4),
+                    ]),
+                    dbc.Row([
+                        dbc.Col([
+                            dcc.Graph(id="figa1"),
+                            dcc.Graph(id="figa2")
+                        ])
                     ])
         ])
     ])
@@ -852,6 +828,6 @@ def update_figure4(date_select_index,radio_select):
 
         return (fig_area, fig_area2)
 
-#app.run_server(host='0.0.0.0',port='8055')
-if __name__=='__main__':
- 	app.run_server()
+app.run_server(host='0.0.0.0',port='8051')
+# if __name__=='__main__':
+#  	app.run_server()
