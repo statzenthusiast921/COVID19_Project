@@ -7,6 +7,7 @@ from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 from datetime import datetime
+import os
 
 who_data = pd.read_csv("https://raw.githubusercontent.com/statzenthusiast921/COVID19_Project/main/data/who_data.csv")
 pops = pd.read_csv("https://gist.githubusercontent.com/curran/0ac4077c7fc6390f5dd33bf5c06cb5ff/raw/605c54080c7a93a417a3cea93fd52e7550e76500/UN_Population_2019.csv")
@@ -191,7 +192,7 @@ table_show['Date Reported'] = table_show['Date_reported']
 table_show = table_show.drop(columns=['Date_reported'])
 table_show = table_show[['Country', 'Date Reported', 'Population', "New Cases","Cumulative Cases","New Deaths","Cumulative Deaths"]]
 
-app = dash.Dash(__name__,external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__,assets_folder=os.path.join(os.curdir,"assets"))
 server = app.server
 app.layout = html.Div([
     dcc.Tabs([
